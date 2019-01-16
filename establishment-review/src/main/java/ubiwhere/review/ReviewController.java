@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ubiwhere.review.exceptions.ReviewNotFoundException;
 import ubiwhere.review.representations.Review;
+import ubiwhere.review.representations.Score;
 
 /**
  *
@@ -28,8 +29,7 @@ import ubiwhere.review.representations.Review;
 public class ReviewController {
 
     @Autowired
-    private ReviewRepository repository;   
-    
+    private ReviewRepository repository;
 
     @RequestMapping(value = "/reviews/{establishment_id}", method = RequestMethod.GET)
     public ResponseEntity<Object> getReview(@PathVariable("establishment_id") String establishment_id) throws InterruptedException, ExecutionException {
@@ -56,7 +56,6 @@ public class ReviewController {
         return new ResponseEntity<>(review, HttpStatus.CREATED);
     }
 
-    //Improve
     @RequestMapping(value = "/reviews/{establishment_id}", method = RequestMethod.PUT)
     public ResponseEntity<Object> updateReview(@Valid @RequestBody Review review, @PathVariable("establishment_id") String establishment_id) {
         Review reviewStored = findReviewById(establishment_id);
@@ -64,6 +63,19 @@ public class ReviewController {
         reviewStored.setNumberOfReviews(review.getNumberOfReviews());
         repository.save(review);
         return new ResponseEntity<>(reviewStored, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/reviews/{establishment_id}/scores", method = RequestMethod.POST)
+    public ResponseEntity<Object> updateReview(@Valid @RequestBody Score score, @PathVariable("establishment_id") String establishment_id) {
+        Review review = repository.findByEstablishmentID(establishment_id);
+        if (review == null) {
+            review = new Review(establishment_id, score.getScore(), 1L);
+        } else {
+            review.setAverageReviewScore((review.getAverageReviewScore() * review.getNumberOfReviews() + score.getScore()) / (review.getNumberOfReviews() + 1L));
+            review.setNumberOfReviews(review.getNumberOfReviews() + 1L);
+        }
+        repository.save(review);
+        return new ResponseEntity<>(score, HttpStatus.CREATED);
     }
 
     private Review findReviewById(String establishment_id) {
