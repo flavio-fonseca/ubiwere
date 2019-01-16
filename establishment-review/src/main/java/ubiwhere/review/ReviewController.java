@@ -50,6 +50,7 @@ public class ReviewController {
     @RequestMapping(value = "/reviews", method = RequestMethod.POST)
     @ApiOperation(value = "Create a review", notes = "Creating a new review", response = Review.class)
     public ResponseEntity<Object> createReview(@Valid @RequestBody Review review) {
+        //There is no verefication if the id exist at establishments API, because the data integrity can be done by a script that runs periodicaly, so in this case i think there is no need to add that verefication here
         Review reviewStored = repository.findByEstablishmentID(review.getEstablishmentID());
         if (reviewStored != null) {
             throw new RuntimeException("Review already exists");
@@ -61,6 +62,7 @@ public class ReviewController {
     @RequestMapping(value = "/reviews/{establishment_id}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update a review", notes = "Update a existent review", response = Review.class)
     public ResponseEntity<Object> updateReview(@Valid @RequestBody Review review, @PathVariable("establishment_id") @ApiParam(value = "establisment id", example = "747652") String establishment_id) {
+        //There is no verefication if the id exist at establishments API, because the data integrity can be done by a script that runs periodicaly, so in this case i think there is no need to add that verefication here
         Review reviewStored = findReviewById(establishment_id);
         reviewStored.setAverageReviewScore(review.getAverageReviewScore());
         reviewStored.setNumberOfReviews(review.getNumberOfReviews());
