@@ -46,6 +46,7 @@ public class SeedController {
     
     private static final Logger log = LoggerFactory.getLogger(SeedController.class);
 
+    @ApiOperation(value = "Clean and create initial random Database data.",notes = "Clean and create initial random Database data.",  response = String.class)
     @RequestMapping(value = "db/seed", method = RequestMethod.GET)
     public String seedDataBase() {
         RestTemplate restTemplate = new RestTemplate();
@@ -76,6 +77,7 @@ public class SeedController {
         return "Seeded";
     }
 
+    @ApiOperation(value = "Clean Database data.",notes = "Clean Database data.",  response = String.class)
     @RequestMapping(value = "db/clean", method = RequestMethod.GET)
     public String cleanDataBase() {
 

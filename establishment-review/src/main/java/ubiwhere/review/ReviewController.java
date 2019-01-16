@@ -6,6 +6,7 @@
 package ubiwhere.review;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
@@ -32,19 +33,20 @@ public class ReviewController {
     private ReviewRepository repository;
 
     @RequestMapping(value = "/reviews/{establishment_id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> getReview(@PathVariable("establishment_id") String establishment_id) throws InterruptedException, ExecutionException {
+    @ApiOperation(value = "Get a existing review", notes = "Get a existing review", response = Review.class)
+    public ResponseEntity<Object> getReview(@PathVariable("establishment_id") @ApiParam(value = "establisment id", example = "747652") String establishment_id) throws InterruptedException, ExecutionException {
         Review review = findReviewById(establishment_id);
         return new ResponseEntity<>(review, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/reviews/{establishment_id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Object> removeReview(@PathVariable("establishment_id") String establishment_id) throws InterruptedException, ExecutionException {
+    @ApiOperation(value = "Remove a review", notes = "Remove a review")
+    public ResponseEntity<Object> removeReview(@PathVariable("establishment_id") @ApiParam(value = "establisment id", example = "747652") String establishment_id) throws InterruptedException, ExecutionException {
         Review review = findReviewById(establishment_id);
         repository.deleteById(review.getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //Improve
     @RequestMapping(value = "/reviews", method = RequestMethod.POST)
     @ApiOperation(value = "Create a review", notes = "Creating a new review", response = Review.class)
     public ResponseEntity<Object> createReview(@Valid @RequestBody Review review) {
@@ -57,7 +59,8 @@ public class ReviewController {
     }
 
     @RequestMapping(value = "/reviews/{establishment_id}", method = RequestMethod.PUT)
-    public ResponseEntity<Object> updateReview(@Valid @RequestBody Review review, @PathVariable("establishment_id") String establishment_id) {
+    @ApiOperation(value = "Update a review", notes = "Update a existent review", response = Review.class)
+    public ResponseEntity<Object> updateReview(@Valid @RequestBody Review review, @PathVariable("establishment_id") @ApiParam(value = "establisment id", example = "747652") String establishment_id) {
         Review reviewStored = findReviewById(establishment_id);
         reviewStored.setAverageReviewScore(review.getAverageReviewScore());
         reviewStored.setNumberOfReviews(review.getNumberOfReviews());
@@ -66,7 +69,8 @@ public class ReviewController {
     }
 
     @RequestMapping(value = "/reviews/{establishment_id}/scores", method = RequestMethod.POST)
-    public ResponseEntity<Object> updateReview(@Valid @RequestBody Score score, @PathVariable("establishment_id") String establishment_id) {
+    @ApiOperation(value = "Add a score to a review", notes = "Add a score to a review, changing this was the average and the total scores", response = Score.class)
+    public ResponseEntity<Object> updateReview(@Valid @RequestBody Score score, @PathVariable("establishment_id") @ApiParam(value = "establisment id", example = "747652") String establishment_id) {
         Review review = repository.findByEstablishmentID(establishment_id);
         if (review == null) {
             review = new Review(establishment_id, score.getScore(), 1L);

@@ -5,6 +5,8 @@
  */
 package ubiwhere.service;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,15 @@ public class ServiceController {
     @Autowired
     private ReviewsApiLookupService reviewsApiLookupService;
 
-
-    @RequestMapping(value = "/establishments/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> getEstablishment(@PathVariable("id") String id) throws InterruptedException, ExecutionException {
+    @ApiOperation(value = "Returns the establishment with the reviews.",notes = "Returns the establishment with the reviews from the review service", response = Establishment.class)
+    @RequestMapping(value = "/establishments/{establishment_id}", method = RequestMethod.GET)
+    public ResponseEntity<Object> getEstablishment(@PathVariable("establishment_id") @ApiParam(value = "establisment id", example = "747652") String establishment_id) throws InterruptedException, ExecutionException {
 
         Review review = null;
-        CompletableFuture<Establishment> establishmentFuture = establishmentsApiLookupService.findEstablishment(id);
+        CompletableFuture<Establishment> establishmentFuture = establishmentsApiLookupService.findEstablishment(establishment_id);
 
         try {
-            review = reviewsApiLookupService.findEstablishmentReview(id);
+            review = reviewsApiLookupService.findEstablishmentReview(establishment_id);
         } catch (HttpClientErrorException ex) {
             if (!HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {
                 throw ex;

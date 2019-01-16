@@ -7,13 +7,14 @@ package ubiwhere.service.representations;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import java.util.List;
 
 /**
  *
  * @author ffonseca
  */
-
+@ApiModel(description = "Class representing a establishment.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Establishment {
     @JsonProperty("FHRSID")
