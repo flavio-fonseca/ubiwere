@@ -60,6 +60,12 @@ public class Establishment {
     private Float distance;
     @JsonProperty("NewRatingPending")
     private Boolean newRatingPending;
+    
+    @JsonProperty("AverageReviewScore")
+    private Double averageReviewScore;
+    
+    @JsonProperty("NumberOfReviews")
+    private Long numberOfReviews;
     private Scores scores;
     private Geocode geocode;
     private Meta meta;
@@ -427,6 +433,34 @@ public class Establishment {
      */
     public void setLinks(List<Link> links) {
         this.links = links;
+    }
+
+    /**
+     * @return the averageReviewScore
+     */
+    public Double getAverageReviewScore() {
+        return averageReviewScore;
+    }
+
+    /**
+     * @param averageReviewScore the averageReviewScore to set
+     */
+    public void setAverageReviewScore(Double averageReviewScore) {
+        this.averageReviewScore = averageReviewScore;
+    }
+
+    /**
+     * @return the numberOfReviews
+     */
+    public Long getNumberOfReviews() {
+        return numberOfReviews;
+    }
+
+    /**
+     * @param numberOfReviews the numberOfReviews to set
+     */
+    public void setNumberOfReviews(Long numberOfReviews) {
+        this.numberOfReviews = numberOfReviews;
     }
     
 }

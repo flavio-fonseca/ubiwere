@@ -12,8 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import ubiwhere.service.representations.Establishment;
+import ubiwhere.service.representations.Review;
 
 /**
  *
@@ -24,34 +27,34 @@ public class ServiceController {
 
     @Autowired
     private EstablishmentsApiLookupService establishmentsApiLookupService;
+    @Autowired
+    private ReviewsApiLookupService reviewsApiLookupService;
 
-    @RequestMapping("/")
-    public String home() {
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-//        headers.add("x-api-version", "2");
-//        headers.add("Accept-Language", "cy-GB");
-//        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-//
-//        ResponseEntity<Establishment> result = restTemplate.exchange("http://api.ratings.food.gov.uk/Establishments/1", HttpMethod.GET, entity, Establishment.class);
-//        Establishment establishment = getEstablishmentWs("1");
-//    Establishment establishment = restTemplate.getForObject("http://api.ratings.food.gov.uk/Establishments/1", Establishment.class);
-//        log.info(establishment.toString());
-        return "Hello World";
-    }
 
-    @RequestMapping(value = "/establishments/{id}")
+    @RequestMapping(value = "/establishments/{id}", method = RequestMethod.GET)
     public ResponseEntity<Object> getEstablishment(@PathVariable("id") String id) throws InterruptedException, ExecutionException {
-//       Establishment establishment = getEstablishmentWs("1");
 
+        Review review = null;
         CompletableFuture<Establishment> establishmentFuture = establishmentsApiLookupService.findEstablishment(id);
 
+        try {
+            review = reviewsApiLookupService.findEstablishmentReview(id);
+        } catch (HttpClientErrorException ex) {
+            if (!HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {
+                throw ex;
+            }
+        }
         // Wait until they are all done
         CompletableFuture.allOf(establishmentFuture).join();
 
         Establishment establishment = establishmentFuture.get();
+        if (review == null) {
+            establishment.setAverageReviewScore(0.0);
+            establishment.setNumberOfReviews(0L);
+        } else {
+            establishment.setAverageReviewScore(review.getAverageReviewScore());
+            establishment.setNumberOfReviews(review.getNumberOfReviews());
+        }
         return new ResponseEntity<>(establishment, HttpStatus.OK);
     }
 

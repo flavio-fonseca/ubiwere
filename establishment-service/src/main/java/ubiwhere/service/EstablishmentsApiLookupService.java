@@ -13,11 +13,14 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import ubiwhere.service.exceptions.EstablishmentNotFoundException;
 import ubiwhere.service.representations.Establishment;
 
 /**
@@ -26,7 +29,7 @@ import ubiwhere.service.representations.Establishment;
  */
 @Service
 public class EstablishmentsApiLookupService {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(EstablishmentsApiLookupService.class);
 
     private final RestTemplate restTemplate;
@@ -44,9 +47,16 @@ public class EstablishmentsApiLookupService {
         headers.add("x-api-version", "2");
         headers.add("Accept-Language", "cy-GB");
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        try {
+            ResponseEntity<Establishment> result = restTemplate.exchange(url, HttpMethod.GET, entity, Establishment.class);
 
-        ResponseEntity<Establishment> result = restTemplate.exchange(url, HttpMethod.GET, entity, Establishment.class);
-        
-        return CompletableFuture.completedFuture(result.getBody());
+            return CompletableFuture.completedFuture(result.getBody());
+        } catch (HttpClientErrorException ex) {
+            if (!HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {
+                throw ex;
+            } else {
+                throw new EstablishmentNotFoundException(id);
+            }
+        }
     }
 }
