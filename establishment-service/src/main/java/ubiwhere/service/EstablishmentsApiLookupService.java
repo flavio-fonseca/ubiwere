@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,8 @@ public class EstablishmentsApiLookupService {
     private static final Logger logger = LoggerFactory.getLogger(EstablishmentsApiLookupService.class);
 
     private final RestTemplate restTemplate;
+    @Value("${ubiwere.establisment.base.url}")
+    private String establishmentBaseUrl;
 
     public EstablishmentsApiLookupService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
@@ -41,7 +44,7 @@ public class EstablishmentsApiLookupService {
     @Async
     public CompletableFuture<Establishment> findEstablishment(String id) throws InterruptedException {
         logger.info("Looking up Establishment" + id);
-        String url = String.format("http://api.ratings.food.gov.uk/Establishments/%s", id);
+        String url = String.format("%sEstablishments/%s",establishmentBaseUrl, id);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.add("x-api-version", "2");

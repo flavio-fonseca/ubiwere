@@ -10,7 +10,10 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,10 +41,15 @@ public class SeedController {
     @Autowired
     private ReviewRepository repository;
 
+    @Value("${ubiwere.establisment.base.url}")
+    private String establishmentBaseUrl;
+    
+    private static final Logger log = LoggerFactory.getLogger(SeedController.class);
+
     @RequestMapping(value = "db/seed", method = RequestMethod.GET)
     public String seedDataBase() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = String.format("http://api.ratings.food.gov.uk/Establishments/basic");
+        String url = String.format(establishmentBaseUrl+"Establishments/basic");
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.add("x-api-version", "2");
@@ -60,10 +68,9 @@ public class SeedController {
             repository.save(new Review(establishment.getFhrsid(), createRandomScore(), createRandomCount()));
         }
 
-        System.out.println("Review found with findAll():");
-        System.out.println("-------------------------------");
+        log.info("Review found with findAll():");
         for (Review review : repository.findAll()) {
-            System.out.println(review);
+            log.info(review.toString());
         }
 
         return "Seeded";
@@ -71,15 +78,9 @@ public class SeedController {
 
     @RequestMapping(value = "db/clean", method = RequestMethod.GET)
     public String cleanDataBase() {
-        
+
         repository.deleteAll();
-
-        System.out.println("Review found with findAll():");
-        System.out.println("-------------------------------");
-        for (Review review : repository.findAll()) {
-            System.out.println(review);
-        }
-
+     
         return "Cleaned";
     }
 

@@ -8,6 +8,9 @@ package ubiwhere.review.representations;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 
@@ -27,10 +30,13 @@ public class Review {
     private String establishmentID;
     
     @NotNull
+    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMax(value = "100.0", inclusive = true)
     @JsonProperty("AverageReviewScore")
     private Double averageReviewScore;
     
     @NotNull
+    @Min(value = 0L)
     @JsonProperty("NumberOfReviews")
     private Long numberOfReviews;
     
