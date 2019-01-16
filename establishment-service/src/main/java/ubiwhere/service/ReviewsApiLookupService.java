@@ -41,7 +41,6 @@ public class ReviewsApiLookupService {
 
     public Review findEstablishmentReview(String id) throws InterruptedException {
         logger.info("Looking up Establishment" + id);
-        //TODO add base url to configs
         String url = String.format("%sreviews/%s",reviewBaseUrl, id);
 
         Review review = restTemplate.getForObject(url, Review.class);
