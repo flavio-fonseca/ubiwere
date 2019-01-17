@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ubiwhere.review.exceptions.ExistsException;
 import ubiwhere.review.exceptions.ReviewNotFoundException;
 import ubiwhere.review.representations.Review;
 import ubiwhere.review.representations.Score;
@@ -53,7 +54,7 @@ public class ReviewController {
         //There is no verefication if the id exist at establishments API, because the data integrity can be done by a script that runs periodicaly, so in this case i think there is no need to add that verefication here
         Review reviewStored = repository.findByEstablishmentID(review.getEstablishmentID());
         if (reviewStored != null) {
-            throw new RuntimeException("Review already exists");
+            throw new ExistsException(review.getEstablishmentID());
         }
         repository.save(review);
         return new ResponseEntity<>(review, HttpStatus.CREATED);
