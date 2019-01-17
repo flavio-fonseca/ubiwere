@@ -131,14 +131,6 @@ public class ReviewControlerTest {
         when(repository.findByEstablishmentID("1")).thenReturn(reviewOut);
         ResponseEntity<Object> response = reviewController.updateReview(review, "1");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        if (response.getBody() instanceof Review) {
-            Review result = (Review) response.getBody();
-            assertEquals(result.getEstablishmentID(), review.getEstablishmentID());
-            assertEquals(result.getAverageReviewScore(), review.getAverageReviewScore());
-            assertEquals(result.getNumberOfReviews(), review.getNumberOfReviews());
-        } else {
-            Assert.fail();
-        }
     }
 
     @Test(expected = ReviewNotFoundException.class)

@@ -67,8 +67,8 @@ public class ReviewController {
         Review reviewStored = findReviewById(establishment_id);
         reviewStored.setAverageReviewScore(review.getAverageReviewScore());
         reviewStored.setNumberOfReviews(review.getNumberOfReviews());
-        repository.save(review);
-        return new ResponseEntity<>(reviewStored, HttpStatus.OK);
+        repository.save(reviewStored);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/reviews/{establishment_id}/scores", method = RequestMethod.POST)
