@@ -7,6 +7,7 @@ package ubiwhere.review;
 
 import io.swagger.annotations.ApiOperation;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
@@ -48,7 +49,7 @@ public class SeedController {
 
     @ApiOperation(value = "Clean and create initial random Database data.",notes = "Clean and create initial random Database data.",  response = String.class)
     @RequestMapping(value = "db/seed", method = RequestMethod.GET)
-    public String seedDataBase() {
+    public List<Review> seedDataBase() {
         RestTemplate restTemplate = new RestTemplate();
         String url = String.format(establishmentBaseUrl+"Establishments/basic");
         HttpHeaders headers = new HttpHeaders();
@@ -74,16 +75,16 @@ public class SeedController {
             log.info(review.toString());
         }
 
-        return "Seeded";
+        return repository.findAll();
     }
 
     @ApiOperation(value = "Clean Database data.",notes = "Clean Database data.",  response = String.class)
     @RequestMapping(value = "db/clean", method = RequestMethod.GET)
-    public String cleanDataBase() {
+    public  List<Review>  cleanDataBase() {
 
         repository.deleteAll();
      
-        return "Cleaned";
+        return repository.findAll();
     }
 
     private Long createRandomCount() {
